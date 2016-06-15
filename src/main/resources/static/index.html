@@ -1,0 +1,119 @@
+<html>
+<head>
+    <title>Infonut</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.4.0/annyang.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Coming+Soon' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div id="nut">
+    <center>
+        <img id="logo" src="images/Infonut.png"/>
+        <div class="input-group input-group-lg searchbox">
+            <input type="text" class="form-control search" placeholder="Just ask Infonut..."/>
+        </div>
+    </center>
+</div>
+<center>
+    <div class="question"></div>
+    <div class="answer"></div>
+</center>
+<script>
+    var rotating;
+    function rotateNut() {
+        var deg = 0;
+        rotating = window.setInterval(function () {
+            deg += 1;
+            $("#logo").css('-webkit-transform', 'rotate(' + deg + 'deg)');
+        }, 25);
+    }
+
+    function stopRotatingNut() {
+        window.clearInterval(rotating);
+        $("#logo").css('-webkit-transform', 'rotate(' + 0 + 'deg)');
+    }
+
+    function displayQuestion(searchTerm) {
+        $('.question').text(searchTerm);
+    }
+
+    function displayAnswer(answer) {
+        $('.answer').text(answer);
+    }
+
+    function clearSearchBox() {
+        $('.search').val('');
+    }
+
+    function clearQuestionAndAnswer() {
+        $('.question').text('');
+        $('.answer').text('');
+    }
+
+    function askInfonut(searchTerm) {
+        clearQuestionAndAnswer();
+        clearSearchBox();
+        displayQuestion(searchTerm);
+        rotateNut();
+        $.ajax({
+            type: "POST",
+            url: 'q',
+            data: JSON.stringify({question: searchTerm}),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                var msg = new SpeechSynthesisUtterance(data.response);
+                window.speechSynthesis.speak(msg);
+                stopRotatingNut();
+                displayAnswer(data.response);
+            }
+        })
+    }
+</script>
+<script>
+    if (annyang) {
+        var commands = {
+            'infinite *tag': function (tag) {
+                askInfonut(tag);
+            }
+        };
+        annyang.addCommands(commands);
+        annyang.start();
+    }
+
+    $('.search').keypress(function (e) {
+        if (e.which == 13) {
+            var searchTerm = $('.search').val();
+            askInfonut(searchTerm);
+            return false;
+        }
+    });
+
+    var placeholders = [
+        'Just ask Infonut... Tell me about App',
+        'Just ask Infonut... What aggregate is App in?',
+        'Just ask Infonut... Run a build of App',
+        'Just ask Infonut... Who is the team leader of Blue team?',
+        'Just ask Infonut... What version of App is running?',
+        'Just ask Infonut... Who are the team members of Red team?',
+        'Just ask Infonut... Who interacts with App?',
+        'Just ask Infonut... What is the status of the App build?',
+        'Just ask Infonut... Who owns App?',
+        'Just ask Infonut... What is the address of App in Staging?'
+    ];
+
+    (function cycle() {
+        var placeholder = placeholders.shift();
+        $('input').attr('placeholder', placeholder);
+        placeholders.push(placeholder);
+        setTimeout(cycle, 2000);
+    })();
+</script>
+</body>
+</html>

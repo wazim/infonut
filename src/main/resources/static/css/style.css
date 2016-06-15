@@ -1,0 +1,33 @@
+body {
+    background-color: #3498db;
+}
+
+#nut {
+    position: fixed;
+    top: 25%;
+    width: 100%;
+    text-align: center;
+}
+
+input.form-control.search {
+    width: 500px;
+}
+
+.searchbox {
+    margin-top: 50px;
+}
+
+.question {
+    margin-top: 50px;
+    color: #FB5D00;
+    font-family: 'Coming Soon', cursive;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.answer {
+    margin-top: 50px;
+    color: white;
+    font-family: 'Coming Soon', cursive;
+    font-size: 30px;
+}
